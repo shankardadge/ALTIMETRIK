@@ -33,7 +33,7 @@ namespace ALTIMETRIK.Application.ZipUsers.ZipUserQueries
             if (request.Id == 0)
             {
                 responseModel.IsSuccess = false;
-                responseModel.Message = "Must pass User Id";
+                responseModel.Message = "Must pass User Id.";
                 responseModel.ResponseCode = 400;
                 return responseModel;
             }
@@ -49,7 +49,7 @@ namespace ALTIMETRIK.Application.ZipUsers.ZipUserQueries
             else
             {
                 responseModel.IsSuccess = false;
-                responseModel.Message = "Record not found";
+                responseModel.Message = "Record not found.";
                 responseModel.ResponseCode = 404;
             }
            return responseModel;
