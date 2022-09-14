@@ -2,6 +2,7 @@
 using ALTIMETRIK.Application.ZipUsers.Dto;
 using ALTIMETRIK.Domain.Entities;
 using ALTIMETRIK.Persistence;
+using AutoMapper;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -14,58 +15,44 @@ namespace ALTIMETRIK.Application.ZipUsers.ZipUserQueries
 {
     public class GetZipUserQuery : IRequest<ResponseModel<Dto.ZipUserDto>>
     {
-        public long Id { get; set; }    
-       
+        public long Id { get; set; }
+
     }
     public class GetZipUserQueryHandler : IRequestHandler<GetZipUserQuery, ResponseModel<Dto.ZipUserDto>>
     {
         private readonly ALTIMETRIKContext _context;
-        public GetZipUserQueryHandler(ALTIMETRIKContext context)
+        private readonly IMapper _mapper;
+        public GetZipUserQueryHandler(ALTIMETRIKContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         public async Task<ResponseModel<Dto.ZipUserDto>> Handle(GetZipUserQuery request, CancellationToken cancellationToken)
         {
+            var responseModel = new ResponseModel<Dto.ZipUserDto>();
             if (request.Id == 0)
             {
-                return  new ResponseModel<Dto.ZipUserDto>()
-                {
-                    IsSuccess = false,
-                    Message= "Must pass User Id",
-                    ResponseCode=400,
-                };
+                responseModel.IsSuccess = false;
+                responseModel.Message = "Must pass User Id";
+                responseModel.ResponseCode = 400;
+                return responseModel;
             }
-           ZipUser result =_context.ZipUser.FirstOrDefault(x => x.Id == request.Id);
+            ZipUser result = _context.ZipUser.FirstOrDefault(x => x.Id == request.Id);
             if (result != null)
             {
-                var zipUser = new Dto.ZipUserDto()
-                {
-                    FirstName = result.FirstName,
-                    LastName = result.LastName,
-                    Email = result.Email,
-                    Phone = result.Phone,
-                    MonthlySalary = result.MonthlySalary,
-                    Id = request.Id,
-                    JobTitle = result.JobTitle,
-                    MonthlyExpense=result.MonthlyExpense,
-                };
-                return new ResponseModel<Dto.ZipUserDto>()
-                {
-                    IsSuccess = true,
-                    Message = "Record featched successfully.",
-                    ResponseCode = 200,
-                    Response = zipUser
-                };
+                var zipUser = _mapper.Map<Dto.ZipUserDto>(result);
+                responseModel.IsSuccess = true;
+                responseModel.Message = "Record featched successfully.";
+                responseModel.ResponseCode = 200;
+                responseModel.Response = zipUser;
             }
             else
             {
-                return new ResponseModel<Dto.ZipUserDto>()
-                {
-                    IsSuccess = false,
-                    Message = "Record not found",
-                    ResponseCode = 404,
-                };
+                responseModel.IsSuccess = false;
+                responseModel.Message = "Record not found";
+                responseModel.ResponseCode = 404;
             }
+           return responseModel;
         }
     }
 }

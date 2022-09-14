@@ -14,5 +14,6 @@ namespace ALTIMETRIK.Application.ZipUsers.Dto
         public string Phone { get; set; }
         public decimal MonthlySalary { get; set; }
         public decimal MonthlyExpense { get; set; }
+        public DateTime ModifiedOn { get; set; }
     }
 }

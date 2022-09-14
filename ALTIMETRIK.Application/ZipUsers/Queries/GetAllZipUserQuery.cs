@@ -1,5 +1,6 @@
 ﻿using ALTIMETRIK.Application.Base.ViewModels;
 using ALTIMETRIK.Persistence;
+using AutoMapper;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -18,46 +19,31 @@ namespace ALTIMETRIK.Application.ZipUsers.Queries
     public class GetAllZipUserQueryHandler : IRequestHandler<GetAllZipUserQuery, ResponseModel<List<Dto.ZipUserDto>>>
     {
         private readonly ALTIMETRIKContext _context;
-        public GetAllZipUserQueryHandler(ALTIMETRIKContext context)
+        private readonly IMapper _mapper;
+        public GetAllZipUserQueryHandler(ALTIMETRIKContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         public async Task<ResponseModel<List<Dto.ZipUserDto>>> Handle(GetAllZipUserQuery request, CancellationToken cancellationToken)
         {
              var result=_context.ZipUser;
-            if(result == null || result.Count() == 0)
+             var responseModel =new ResponseModel<List<Dto.ZipUserDto>>();
+            if (result == null || result.Count() == 0)
             {
-                return new ResponseModel<List<Dto.ZipUserDto>>()
-                {
-                    IsSuccess=false,
-                    Message="No content",
-                    ResponseCode=204
-                };
+                responseModel.IsSuccess = false;
+                responseModel.Message = "No content";
+                responseModel.ResponseCode = 204;
+               
             }else
             {
-                 List<Dto.ZipUserDto> resultList = new List<Dto.ZipUserDto>();
-                foreach(var item in result)
-                {
-                    resultList.Add(new Dto.ZipUserDto()
-                    {
-                        Email=item.Email,
-                        FirstName=item.FirstName,   
-                        LastName=item.LastName,
-                        Id=item.Id, 
-                        JobTitle=item.JobTitle,
-                        MonthlyExpense=item.MonthlyExpense,
-                        MonthlySalary=item.MonthlySalary,
-                        Phone=item.Phone,
-                    });
-                }
-                return new ResponseModel<List<Dto.ZipUserDto>>()
-                {
-                    IsSuccess = true,
-                    Message = "Records featched successfully.",
-                    Response= resultList,
-                    ResponseCode = 200
-                };
+                List<Dto.ZipUserDto> resultList = _mapper.Map<List<Dto.ZipUserDto>>(result.ToList());
+                responseModel.IsSuccess = true;
+                responseModel.Message = "Records featched successfully.";
+                responseModel.Response = resultList;
+                responseModel.ResponseCode = 200;
             }
+            return responseModel;
         }
     }
 }

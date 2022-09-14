@@ -28,15 +28,14 @@ namespace ALTIMETRIK.Application.ZipUsers.Commands
         }
         public async Task<ResponseModel<int>> Handle(AddZipUserCommand request, CancellationToken cancellationToken)
         {
+            var responseModel = new ResponseModel<int>();
             if (_context.ZipUser.Any(x => x.Email == request.Email))
             {
-                return new ResponseModel<int>()
-                {
-                    IsSuccess = false,
-                    Message = "Account already exist for that email",
-                    Response = 0,
-                    ResponseCode = 409
-                };
+                responseModel.IsSuccess = false;
+                responseModel.Message = "Account already exist for that email.";
+                responseModel.Response = 0;
+                responseModel.ResponseCode = 409;
+                return responseModel;
             }
 
             ZipUser zipUser = new ZipUser()
@@ -52,17 +51,13 @@ namespace ALTIMETRIK.Application.ZipUsers.Commands
             };
             _context.ZipUser.Add(zipUser);
             var result = await _context.SaveChangesAsync();
-
-            return new ResponseModel<int>()
-            {
-                IsSuccess = true,
-                Message = "Account created succssfully",
-                Response = result,
-                ResponseCode = 201
-            };
+            responseModel.IsSuccess = true;
+            responseModel.Message = "Account created succssfully";
+            responseModel.Response = result;
+            return responseModel;
         }
 
     }
 }
 
-    
+
