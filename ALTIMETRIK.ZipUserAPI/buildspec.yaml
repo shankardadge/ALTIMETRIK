@@ -1,0 +1,18 @@
+﻿version: 0.2
+phases:
+  install:
+    runtime-versions:
+      dotnet: 3.1
+  pre_build:
+    commands:
+     - dotnet restore ALTIMETRIK.ZipUserAPI.csproj
+  build:
+    commands:
+      - dotnet build ALTIMETRIK.ZipUserAPI.csproj
+  post_build:
+    commands:
+      - dotnet publish -c Release -r linux-x64 ALTIMETRIK.ZipUserAPI.csproj
+artifacts:  
+  files:
+    - bin/Release/netcoreapp3.1/linux-x64/publish/**/*
+  discard-paths: yes
